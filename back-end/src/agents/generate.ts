@@ -4,7 +4,7 @@ import { ChatOpenAI } from '@langchain/openai';
 
 export function generatorAgent() {
   const systemMsg =
-    'Your function is to interpret user requests specifically for smart contract development. You must generate complete code exclusively, without any explanatory or conversational text and placeholder comments.';
+    'Your function is to interpret user requests specifically for smart contract development in Soliditu. You must generate FULL code exclusively, without any explanatory or conversational text and placeholder comments. Use openzeppelin libraries if neccessary. Do not use SafeMath library and use pragma 0.8.19 everytime.';
   const userMsg =
     'Template example: {example} \n\n Request: Based on the provided example apply the following customization "{customization}"';
 
