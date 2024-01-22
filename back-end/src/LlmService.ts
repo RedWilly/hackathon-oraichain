@@ -1,3 +1,4 @@
+import { Pinecone } from '@pinecone-database/pinecone';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
@@ -11,6 +12,8 @@ import { TBuildResponse, TContractType, TVulnerability } from './types';
 dotenv.config();
 
 export class LlmService {
+  public devEnv = process.env.NODE_ENV === 'development';
+
   constructor() {
     mongoose.connect(process.env.MONGO_DB_URI || '').catch((error) => {
       console.log('Error connecting to the DB', error);
@@ -18,7 +21,7 @@ export class LlmService {
   }
 
   private trimCode(code: string) {
-    const codeMatch = new RegExp(`\`\`\`rust([\\s\\S]*?)\`\`\``, 'g').exec(code);
+    const codeMatch = new RegExp(`\`\`\`solidity([\\s\\S]*?)\`\`\``, 'g').exec(code);
     return codeMatch ? codeMatch[1].trim() : code;
   }
 
@@ -31,8 +34,14 @@ export class LlmService {
   }
 
   async callGeneratorLLM(customization: string, contractType: TContractType): Promise<string> {
+    if (this.devEnv) {
+      return 'pragma solidity ^0.8.0;\n\ncontract MyContract {\n\n}';
+    }
+
     const templateDoc = await SDoc.findOne({ template: contractType });
-    const responseCode = await generatorAgent().invoke({
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY || '' });
+    const generator = await generatorAgent(pinecone);
+    const responseCode = await generator.invoke({
       example: templateDoc?.example || '',
       customization,
     });
@@ -56,6 +65,16 @@ export class LlmService {
   }
 
   async callAuditorLLM(code: string): Promise<TVulnerability[]> {
+    if (this.devEnv) {
+      return [
+        {
+          title: 'Vulnerability 1',
+          description: 'Description of vulnerability 1',
+          severity: 'Medium',
+        },
+      ];
+    }
+
     const response = await auditorAgent().invoke({
       code: code,
     });

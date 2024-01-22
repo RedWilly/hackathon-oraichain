@@ -1,7 +1,12 @@
+export type TArtifact = {
+  abi: unknown[];
+  bytecode: string;
+};
+
 export type TBuildResponse = {
   success: boolean;
   message: string;
-  artifact: unknown;
+  artifact: TArtifact;
   code: string;
 };
 
