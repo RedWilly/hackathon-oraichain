@@ -1,5 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-
 import React from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
@@ -8,7 +6,7 @@ import { copyToClipboard, isClipboardApiSupported } from '@/lib/clipboard';
 import downloadContent from '@/lib/download';
 
 import CopyButton from '../copy-button';
-import DownloadArtifactsButton from '../download-artifacts-button';
+import DeploymentDialog from '../deployment-dialog';
 import DownloadButton from '../download-button';
 import { Textarea } from '../ui/textarea';
 import SectionContainer from './container';
@@ -36,7 +34,7 @@ export default function CodeViewerSection({
           </h4>
         </div>
 
-        {contractArtifacts && <DownloadArtifactsButton {...contractArtifacts} />}
+        {contractArtifacts && <DeploymentDialog />}
       </div>
 
       <div className='relative'>
@@ -69,4 +67,3 @@ export default function CodeViewerSection({
     </SectionContainer>
   );
 }
-
