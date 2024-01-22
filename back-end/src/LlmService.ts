@@ -1,3 +1,4 @@
+import { Pinecone } from '@pinecone-database/pinecone';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
@@ -38,7 +39,9 @@ export class LlmService {
     }
 
     const templateDoc = await SDoc.findOne({ template: contractType });
-    const responseCode = await generatorAgent().invoke({
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY || '' });
+    const generator = await generatorAgent(pinecone);
+    const responseCode = await generator.invoke({
       example: templateDoc?.example || '',
       customization,
     });
