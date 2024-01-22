@@ -11,6 +11,8 @@ import { TBuildResponse, TContractType, TVulnerability } from './types';
 dotenv.config();
 
 export class LlmService {
+  public devEnv = process.env.NODE_ENV === 'development';
+
   constructor() {
     mongoose.connect(process.env.MONGO_DB_URI || '').catch((error) => {
       console.log('Error connecting to the DB', error);
@@ -31,6 +33,10 @@ export class LlmService {
   }
 
   async callGeneratorLLM(customization: string, contractType: TContractType): Promise<string> {
+    if (this.devEnv) {
+      return 'pragma solidity ^0.8.0;\n\ncontract MyContract {\n\n}';
+    }
+
     const templateDoc = await SDoc.findOne({ template: contractType });
     const responseCode = await generatorAgent().invoke({
       example: templateDoc?.example || '',
@@ -56,6 +62,16 @@ export class LlmService {
   }
 
   async callAuditorLLM(code: string): Promise<TVulnerability[]> {
+    if (this.devEnv) {
+      return [
+        {
+          title: 'Vulnerability 1',
+          description: 'Description of vulnerability 1',
+          severity: 'Medium',
+        },
+      ];
+    }
+
     const response = await auditorAgent().invoke({
       code: code,
     });

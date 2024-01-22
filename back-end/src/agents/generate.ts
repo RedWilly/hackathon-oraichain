@@ -4,7 +4,7 @@ import { ChatOpenAI } from '@langchain/openai';
 
 export function generatorAgent() {
   const systemMsg =
-    'Your function is to interpret user requests specifically for smart contract development. You must generate complete code exclusively, without any explanatory or conversational text and placeholder comments. Focus on the user-provided documentation and code examples and follow the exact language syntax.';
+    'Your function is to interpret user requests specifically for smart contract development. You must generate complete code exclusively, without any explanatory or conversational text and placeholder comments.';
   const userMsg =
     'Template example: {example} \n\n Request: Based on the provided example apply the following customization "{customization}"';
 
