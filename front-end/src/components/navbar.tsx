@@ -1,11 +1,6 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import defiBuilderLogo from '../assets/images/defi-builder-logo.png';
-import { Skeleton } from './ui/skeleton';
-
-const Wallet = React.lazy(() =>
-  import('./wallet').then((component) => ({ default: component.Wallet }))
-);
 
 export default function Navbar() {
   return (
@@ -13,9 +8,9 @@ export default function Navbar() {
       <div className='flex h-full w-full max-w-[1320px] items-center justify-between'>
         <img src={defiBuilderLogo} alt="DeFi Builder's logo" className='h-6' />
 
-        <Suspense fallback={<Skeleton className='h-10 w-40' />}>
-          <Wallet className='w-40' />
-        </Suspense>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-expect-error */}
+        <w3m-button />
       </div>
     </nav>
   );

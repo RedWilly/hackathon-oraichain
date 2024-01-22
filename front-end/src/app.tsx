@@ -6,18 +6,21 @@ import Layout from './components/layout';
 import { Toaster } from './components/ui/toast/toaster';
 import HomePage from './pages/home';
 import NotFoundPage from './pages/not-found';
+import RootProvider from './providers/root';
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='*' element={<NotFoundPage />} />
-        </Routes>
+      <RootProvider>
+        <Layout>
+          <Routes>
+            <Route path='/' element={<HomePage />} />
+            <Route path='*' element={<NotFoundPage />} />
+          </Routes>
 
-        <Toaster />
-      </Layout>
+          <Toaster />
+        </Layout>
+      </RootProvider>
     </BrowserRouter>
   );
 }
