@@ -25,7 +25,7 @@ export async function generatorAgent(pineconeClinet: Pinecone) {
   const pineconeStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings(), {
     pineconeIndex: pineconeClinet.index('article'),
   });
-  const pineconeRetriever = pineconeStore.asRetriever({ k: 10, searchType: 'mmr', verbose: false });
+  const pineconeRetriever = pineconeStore.asRetriever({ k: 5, searchType: 'mmr', verbose: false });
 
   const llm = new ChatOpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,

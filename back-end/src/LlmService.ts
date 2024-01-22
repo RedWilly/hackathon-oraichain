@@ -21,7 +21,7 @@ export class LlmService {
   }
 
   private trimCode(code: string) {
-    const codeMatch = new RegExp(`\`\`\`rust([\\s\\S]*?)\`\`\``, 'g').exec(code);
+    const codeMatch = new RegExp(`\`\`\`solidity([\\s\\S]*?)\`\`\``, 'g').exec(code);
     return codeMatch ? codeMatch[1].trim() : code;
   }
 
