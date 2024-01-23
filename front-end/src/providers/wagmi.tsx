@@ -1,8 +1,10 @@
 import React from 'react';
 
 import type { PropsWithChildren } from 'react';
+import type { EIP1193Provider } from 'viem';
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi';
+import { createPublicClient, createWalletClient, custom } from 'viem';
 import { WagmiProvider as WagmiContext } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 
@@ -16,18 +18,12 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/142919060']
 };
 
-const projectId = 'WALLET_CONNECT_PROJECT_ID';
+const projectId = (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID ?? '') as string;
 const wagmiConfig = defaultWagmiConfig({
   chains: [sepolia],
   projectId,
   metadata
 });
-
-declare module 'wagmi' {
-  interface Register {
-    config: typeof wagmiConfig;
-  }
-}
 
 createWeb3Modal({
   chains: [sepolia],
@@ -41,6 +37,18 @@ createWeb3Modal({
     '--w3m-color-mix-strength': 1,
     '--w3m-border-radius-master': '0.5rem'
   }
+});
+
+export const walletClient = createWalletClient({
+  chain: sepolia,
+  transport: custom(window.ethereum as EIP1193Provider)
+});
+
+export const [account] = await walletClient.getAddresses();
+
+export const publicClient = createPublicClient({
+  chain: sepolia,
+  transport: custom(window.ethereum as EIP1193Provider)
 });
 
 interface IWagmiProvider extends PropsWithChildren {}

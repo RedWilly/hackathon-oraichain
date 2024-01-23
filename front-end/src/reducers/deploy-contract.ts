@@ -1,30 +1,28 @@
-import type IArtifact from '@/interfaces/artifact';
-
 import EReducerState from '@/constants/reducer-state';
 
-const compileContractInitialState = {
+const deployContractInitialState = {
   isLoading: false,
   isError: false,
   isSuccess: false,
-  artifact: null as IArtifact | null,
+  contractAddress: null as string | null,
   errorMessage: null as string | null
 };
 
-type TCompileContractState = typeof compileContractInitialState;
+type TDeployContractState = typeof deployContractInitialState;
 
-interface ICompileContractAction {
+interface IDeployContractAction {
   state: EReducerState;
-  payload: IArtifact | string | null;
+  payload: string | null;
 }
 
-function compileContractReducer(state: TCompileContractState, action: ICompileContractAction) {
+function deployContractReducer(state: TDeployContractState, action: IDeployContractAction) {
   switch (action.state) {
     case EReducerState.start: {
       return {
         isLoading: true,
         isError: false,
         isSuccess: false,
-        artifact: null,
+        contractAddress: null,
         errorMessage: null
       };
     }
@@ -33,7 +31,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isLoading: false,
         isError: false,
         isSuccess: true,
-        artifact: action.payload as IArtifact,
+        contractAddress: action.payload,
         errorMessage: null
       };
     }
@@ -42,8 +40,8 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isLoading: false,
         isError: true,
         isSuccess: false,
-        artifact: null,
-        errorMessage: action.payload as string
+        contractAddress: null,
+        errorMessage: action.payload
       };
     }
     case EReducerState.reset: {
@@ -51,7 +49,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isLoading: false,
         isError: false,
         isSuccess: false,
-        artifact: null,
+        contractAddress: null,
         errorMessage: null
       };
     }
@@ -61,5 +59,5 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
   }
 }
 
-export type { TCompileContractState, ICompileContractAction };
-export { compileContractInitialState, compileContractReducer };
+export type { TDeployContractState, IDeployContractAction };
+export { deployContractInitialState, deployContractReducer };
