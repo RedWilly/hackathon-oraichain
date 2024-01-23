@@ -3,7 +3,7 @@ type TContentType = 'text/plain';
 export default function downloadContent(
   content: Blob | string,
   fileName: string,
-  contentType?: TContentType
+  contentType: TContentType = 'text/plain'
 ) {
   const contentBlob =
     content instanceof Blob ? content : new Blob([content], { type: contentType });

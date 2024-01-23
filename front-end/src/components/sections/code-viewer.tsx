@@ -56,11 +56,7 @@ export default function CodeViewerSection({
           variant='outline'
           className='absolute right-5 top-5'
           onButtonClick={() =>
-            downloadContent(
-              smartContractCode,
-              `smart-contract${smartContractFileExtension}`,
-              'text/plain'
-            )
+            downloadContent(smartContractCode, `smart-contract${smartContractFileExtension}`)
           }
         />
       </div>
