@@ -1,7 +1,7 @@
 import type ITemplate from '@/interfaces/template';
 
 const chainConfig = {
-  name: 'Ethereum',
+  name: 'Oraichain',
   docs: 'https://docs.defibuilder.com/',
   contractFileExtension: '.sol',
   templates: [
