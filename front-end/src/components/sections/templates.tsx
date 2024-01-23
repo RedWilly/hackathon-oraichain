@@ -46,7 +46,7 @@ export default function TemplatesSection({
                 }
               }}
             >
-              <img src={template.iconURL} />
+              <template.icon className='h-7 w-7' />
               <span className='text-lg font-medium'>{template.name}</span>
               <span className='text-sm text-muted-foreground'>
                 Generate a {chainsName} custom {template.name}
@@ -58,4 +58,3 @@ export default function TemplatesSection({
     </SectionContainer>
   );
 }
-
