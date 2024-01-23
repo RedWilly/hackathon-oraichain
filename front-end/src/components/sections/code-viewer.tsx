@@ -256,14 +256,17 @@ export default function CodeViewerSection({
         </div>
 
         {deployContractState.contractAddress && (
-          <div className='flex items-end gap-x-2.5'>
+          <div className='mt-5 flex items-end gap-2.5 md:mt-0'>
             <div className='flex flex-col gap-y-1'>
               <p className='text-sm text-muted-foreground'>Smart Contract address:</p>
               <ExternalAnchor
                 href={`https://sepolia.etherscan.io/address/${deployContractState.contractAddress}`}
                 className='text-sm hover:underline'
               >
-                {`${deployContractState.contractAddress?.slice(0, 8)}...${deployContractState.contractAddress?.slice(-8)}`}
+                <span className='hidden md:block'>
+                  {`${deployContractState.contractAddress?.slice(0, 8)}...${deployContractState.contractAddress?.slice(-8)}`}
+                </span>
+                <span className='block md:hidden'>{deployContractState.contractAddress}</span>
               </ExternalAnchor>
             </div>
 
