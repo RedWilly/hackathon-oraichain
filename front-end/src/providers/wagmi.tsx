@@ -16,7 +16,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/142919060']
 };
 
-const projectId = 'WALLET_CONNECT_PROJECT_ID';
+const projectId = (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID ?? '') as string;
 const wagmiConfig = defaultWagmiConfig({
   chains: [sepolia],
   projectId,
