@@ -22,7 +22,7 @@ export default function HeaderSection({
       <div className='flex w-full flex-col justify-between md:flex-row'>
         <div className='flex flex-col gap-y-2.5'>
           <div className='flex items-center gap-x-2.5'>
-            <img src={chainLogo} alt={`${chainsName}'s logo`} className='h-10' />
+            <img src={chainLogo} alt={`${chainsName}'s logo`} className='h-12' />
             <h1 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>
               {chainsName} AI Builder
             </h1>
