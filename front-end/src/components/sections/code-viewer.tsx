@@ -34,7 +34,7 @@ export default function CodeViewerSection({
           </h4>
         </div>
 
-        {contractArtifacts && <DeploymentDialog />}
+        {contractArtifacts && <DeploymentDialog contractArtifacts={contractArtifacts} />}
       </div>
 
       <div className='relative'>
