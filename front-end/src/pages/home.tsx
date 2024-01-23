@@ -10,6 +10,7 @@ import BorderedContainer from '@/components/bordered-container';
 import ContractCreationSteps from '@/components/contract-creation-steps';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/toast/use-toast';
 import chainConfig from '@/config/chain';
 import EReducerState from '@/constants/reducer-state';
 import { auditContractInitialState, auditContractReducer } from '@/reducers/audit-contract';
@@ -36,6 +37,7 @@ export default function HomePage() {
 
   const [activeTemplateName, setActiveTemplateName] = useState(activeTemplates[0].name);
   const [userPrompt, setUserPrompt] = useState('');
+  const { toast } = useToast();
 
   const [predefinedPromptsState, dispatchPredefinedPrompts] = useReducer(
     predefinedPromptsReducer,
@@ -106,6 +108,7 @@ export default function HomePage() {
 
   const isGenerationCompleted =
     (generateContractState.isError || generateContractState.isSuccess) &&
+    (compileContractState.isError || compileContractState.isSuccess) &&
     (auditContractState.isError || auditContractState.isSuccess);
 
   const creationSteps = [
@@ -160,10 +163,13 @@ export default function HomePage() {
       payload: null
     });
 
-    const contractCode = await generateContract();
+    let contractCode = await generateContract();
 
     if (contractCode) {
-      await compileContract(contractCode);
+      contractCode = await compileContract(contractCode);
+    }
+
+    if (contractCode) {
       await auditContract(contractCode);
     }
   }
@@ -217,7 +223,7 @@ export default function HomePage() {
     return null;
   }
 
-  async function compileContract(contractCode: string) {
+  async function compileContract(contractCode: string, maxTries = 3): Promise<string | null> {
     console.log('COMPILING CONTRACT');
 
     try {
@@ -233,14 +239,44 @@ export default function HomePage() {
         compileContractResponse === undefined ||
         !compileContractResponse.success
       ) {
-        dispatchCompileContract({
-          state: EReducerState.error,
-          payload: null
+        console.error(`ERROR COMPILING CONTRACT attempt ${maxTries}`, compileContractResponse);
+
+        if (maxTries > 0) {
+          toast({
+            variant: 'destructive',
+            title: 'Oops, compilation did not succeed.',
+            description: `Relax, our AI friend is taking care of it! Remaining Attempts: ${maxTries}`
+          });
+
+          // Try fixing the code
+          const newContractCode = await LlmService.callBuildResolverLLM(
+            contractCode,
+            compileContractResponse.message
+          );
+
+          // Overwrite the faulty contract code
+          dispatchGenerateContract({
+            state: EReducerState.success,
+            payload: newContractCode
+          });
+
+          return await compileContract(newContractCode, maxTries - 1);
+        }
+
+        toast({
+          variant: 'destructive',
+          title: 'Oops, my processor overheated',
+          description:
+            'Our AI friend could not figure out your requirements. Plase be more precise with your smart contract description and try again!'
         });
 
-        console.error('ERROR COMPILING CONTRACT', compileContractResponse);
+        // Max tries reached and still error
+        dispatchCompileContract({
+          state: EReducerState.error,
+          payload: compileContractResponse.message
+        });
 
-        return;
+        return null;
       }
 
       dispatchCompileContract({
@@ -249,13 +285,15 @@ export default function HomePage() {
       });
 
       console.log('COMPILATION RESPONSE', compileContractResponse);
+      return contractCode;
     } catch (error) {
       dispatchCompileContract({
         state: EReducerState.error,
         payload: null
       });
 
-      console.error('ERROR COMPILING CONTRACT', error);
+      console.error('ERROR FROM COMPILE ENDPOINT', error);
+      return null;
     }
   }
 
