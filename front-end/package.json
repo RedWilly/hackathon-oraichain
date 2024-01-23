@@ -31,7 +31,7 @@
     "@web3modal/wagmi": "4.0.0-alpha.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "lucide-react": "^0.302.0",
+    "lucide-react": "^0.305.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",

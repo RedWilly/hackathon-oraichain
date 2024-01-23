@@ -37,25 +37,25 @@ export default function PredefinedPromptsModal({
       <DialogContent>
         <DialogHeader className='flex gap-y-5'>
           <DialogTitle>Predefined Prompt</DialogTitle>
-
-          <ul className='flex flex-col'>
-            {predefinedPrompts.map((prompt) => (
-              <li key={prompt.template} className='w-full'>
-                <Button
-                  variant='secondary'
-                  className='flex h-min w-full flex-col items-start justify-start gap-y-2.5 whitespace-normal p-2.5 text-left'
-                  onClick={() => {
-                    setUserPrompt(prompt.description);
-                    setIsDialogOpen(false);
-                  }}
-                >
-                  <span className='font-medium'>{prompt.title}</span>
-                  <span className='text-muted-foreground'>{prompt.description}</span>
-                </Button>
-              </li>
-            ))}
-          </ul>
         </DialogHeader>
+
+        <ul className='flex flex-col gap-y-2.5'>
+          {predefinedPrompts.map((prompt, index) => (
+            <li key={`${prompt.template}-${index}`} className='w-full'>
+              <Button
+                variant='secondary'
+                className='flex h-min w-full flex-col items-start justify-start gap-y-1 whitespace-normal p-2.5 text-left'
+                onClick={() => {
+                  setUserPrompt(prompt.description);
+                  setIsDialogOpen(false);
+                }}
+              >
+                <span className='font-medium'>{prompt.title}</span>
+                <span className='text-muted-foreground'>{prompt.description}</span>
+              </Button>
+            </li>
+          ))}
+        </ul>
       </DialogContent>
     </Dialog>
   );
