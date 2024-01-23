@@ -106,6 +106,7 @@ export default function HomePage() {
 
   const isGenerationCompleted =
     (generateContractState.isError || generateContractState.isSuccess) &&
+    (compileContractState.isError || compileContractState.isSuccess) &&
     (auditContractState.isError || auditContractState.isSuccess);
 
   const creationSteps = [
@@ -164,6 +165,7 @@ export default function HomePage() {
 
     if (contractCode) {
       await compileContract(contractCode);
+
       await auditContract(contractCode);
     }
   }
@@ -217,7 +219,7 @@ export default function HomePage() {
     return null;
   }
 
-  async function compileContract(contractCode: string) {
+  async function compileContract(contractCode: string, maxTries = 3) {
     console.log('COMPILING CONTRACT');
 
     try {
@@ -233,12 +235,25 @@ export default function HomePage() {
         compileContractResponse === undefined ||
         !compileContractResponse.success
       ) {
+        console.error(`ERROR COMPILING CONTRACT ${maxTries}`, compileContractResponse);
+
+        if (maxTries > 0) {
+          // Try fixing the code
+          const newContractCode = await LlmService.callBuildResolverLLM(
+            contractCode,
+            compileContractResponse.message
+          );
+
+          await compileContract(newContractCode, maxTries - 1);
+
+          return;
+        }
+
+        // Max tries reached and still error
         dispatchCompileContract({
           state: EReducerState.error,
-          payload: null
+          payload: compileContractResponse.message
         });
-
-        console.error('ERROR COMPILING CONTRACT', compileContractResponse);
 
         return;
       }
@@ -255,7 +270,7 @@ export default function HomePage() {
         payload: null
       });
 
-      console.error('ERROR COMPILING CONTRACT', error);
+      console.error('ERROR FROM COMPILE ENDPOINT', error);
     }
   }
 
