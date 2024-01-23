@@ -112,19 +112,19 @@ const mockedABI = [
   }
 ];
 
-interface IContructorArgument {
+type TConstructorArgument = {
   name: string;
   type: string;
-}
+};
 
-type TContructorArgumentValue = Record<string, string>;
+type TConstructorArgumentValue = Record<string, string>;
 
 export default function DeploymentDialog() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const [constructorArguments, setConstructorArguments] = useState<IContructorArgument[]>([]);
+  const [constructorArguments, setConstructorArguments] = useState<TConstructorArgument[]>([]);
   const [constructorArgumentsValue, setConstructorArgumentsValue] =
-    useState<TContructorArgumentValue>({});
+    useState<TConstructorArgumentValue>({});
 
   useEffect(
     // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -145,26 +145,24 @@ export default function DeploymentDialog() {
             'inputs' in constructor &&
             Array.isArray(constructor.inputs)
           ) {
-            const _constructorArguments: IContructorArgument[] = [];
-            const _constructorArgumentsValue: TContructorArgumentValue = {};
+            const _constructorArguments: TConstructorArgument[] = [];
+            const _constructorArgumentsValue: TConstructorArgumentValue = {};
 
-            const constructorArguments = constructor.inputs;
-
-            for (const argument of constructorArguments) {
+            for (const input of constructor.inputs) {
               if (
-                argument !== null &&
-                argument !== undefined &&
-                typeof argument === 'object' &&
-                'name' in argument &&
-                typeof argument.name === 'string' &&
-                'type' in argument &&
-                typeof argument.type === 'string'
+                input !== null &&
+                input !== undefined &&
+                typeof input === 'object' &&
+                'name' in input &&
+                typeof input.name === 'string' &&
+                'type' in input &&
+                typeof input.type === 'string'
               ) {
                 _constructorArguments.push({
-                  name: argument.name,
-                  type: argument.type
+                  name: input.name,
+                  type: input.type
                 });
-                _constructorArgumentsValue[argument.name] = '';
+                _constructorArgumentsValue[input.name] = '';
               }
             }
 
@@ -210,7 +208,6 @@ export default function DeploymentDialog() {
                 <Input
                   id={argument.name}
                   name={argument.name}
-                  type={argument.type}
                   value={constructorArgumentsValue[argument.name]}
                   placeholder={`Fill in ${argument.name} argument`}
                   onChange={onConstructorArgumentValueChange}
