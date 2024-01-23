@@ -80,7 +80,7 @@ export default function DeploymentDialog({
   return (
     <Dialog open={isDialogOpen} onOpenChange={onDialogOpenChange}>
       <DialogTrigger asChild>
-        <Button>Deploy Smart Contract</Button>
+        <Button className='w-48'>Deploy Smart Contract</Button>
       </DialogTrigger>
 
       <DialogContent className='max-h-[calc(100%-5rem)] overflow-y-auto '>

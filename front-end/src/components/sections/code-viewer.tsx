@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { Suspense, useEffect, useReducer, useState } from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
 
@@ -12,11 +12,13 @@ import { account, publicClient, walletClient } from '@/providers/wagmi';
 import { deployContractInitialState, deployContractReducer } from '@/reducers/deploy-contract';
 
 import CopyButton from '../copy-button';
-import DeploymentDialog from '../deployment-dialog';
 import DownloadButton from '../download-button';
 import ExternalAnchor from '../external-anchor';
+import { Skeleton } from '../ui/skeleton';
 import { Textarea } from '../ui/textarea';
 import SectionContainer from './container';
+
+const DeploymentDialog = React.lazy(() => import('../deployment-dialog'));
 
 const mockedABI = [
   {
@@ -276,14 +278,16 @@ export default function CodeViewerSection({
         )}
 
         {contractArtifacts && (
-          <DeploymentDialog
-            constructorArguments={constructorArguments}
-            constructorArgumentsValue={constructorArgumentsValue}
-            deployContractState={deployContractState}
-            dispatchDeployContract={dispatchDeployContract}
-            setConstructorArgumentsValue={setConstructorArgumentsValue}
-            onDeployClick={deployContract}
-          />
+          <Suspense fallback={<Skeleton className='h-10 w-48' />}>
+            <DeploymentDialog
+              constructorArguments={constructorArguments}
+              constructorArgumentsValue={constructorArgumentsValue}
+              deployContractState={deployContractState}
+              dispatchDeployContract={dispatchDeployContract}
+              setConstructorArgumentsValue={setConstructorArgumentsValue}
+              onDeployClick={deployContract}
+            />
+          </Suspense>
         )}
       </div>
 
