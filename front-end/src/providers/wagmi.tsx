@@ -44,8 +44,6 @@ export const walletClient = createWalletClient({
   transport: custom(window.ethereum as EIP1193Provider)
 });
 
-export const [account] = await walletClient.getAddresses();
-
 export const publicClient = createPublicClient({
   chain: sepolia,
   transport: custom(window.ethereum as EIP1193Provider)

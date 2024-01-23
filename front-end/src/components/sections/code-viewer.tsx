@@ -3,12 +3,13 @@ import React, { Suspense, useEffect, useReducer, useState } from 'react';
 import type IArtifact from '@/interfaces/artifact';
 
 import { encodeDeployData } from 'viem';
+import { useAccount } from 'wagmi';
 
 import EReducerState from '@/constants/reducer-state';
 import { copyToClipboard, isClipboardApiSupported } from '@/lib/clipboard';
 import downloadContent from '@/lib/download';
 import { mapViemErrorToMessage } from '@/lib/errors-mapper';
-import { account, publicClient, walletClient } from '@/providers/wagmi';
+import { publicClient, walletClient } from '@/providers/wagmi';
 import { deployContractInitialState, deployContractReducer } from '@/reducers/deploy-contract';
 
 import CopyButton from '../copy-button';
@@ -142,6 +143,8 @@ export default function CodeViewerSection({
   smartContractFileExtension,
   contractArtifacts
 }: ISmartContractCodeSection) {
+  const { address } = useAccount();
+
   const [constructorArguments, setConstructorArguments] = useState<TConstructorArgument[]>([]);
   const [constructorArgumentsValue, setConstructorArgumentsValue] =
     useState<TConstructorArgumentValue>({});
@@ -200,6 +203,10 @@ export default function CodeViewerSection({
   }, [contractArtifacts]);
 
   async function deployContract() {
+    if (!address) {
+      return;
+    }
+
     dispatchDeployContract({
       state: EReducerState.start,
       payload: null
@@ -214,13 +221,13 @@ export default function CodeViewerSection({
 
       const estimateGas = await publicClient.estimateGas({
         to: null,
-        account,
+        account: address,
         data
       });
 
       const hash = await walletClient.deployContract({
         abi: mockedABI,
-        account,
+        account: address,
         bytecode: mockedBytecode,
         args: Object.values(constructorArgumentsValue),
         gas: estimateGas
