@@ -7,7 +7,7 @@ const compileContractInitialState = {
   isError: false,
   isSuccess: false,
   artifact: null as IArtifact | null,
-  errorMsg: null as string | null
+  errorMessage: null as string | null
 };
 
 type TCompileContractState = typeof compileContractInitialState;
@@ -25,7 +25,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isError: false,
         isSuccess: false,
         artifact: null,
-        errorMsg: null
+        errorMessage: null
       };
     }
     case EReducerState.success: {
@@ -34,7 +34,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isError: false,
         isSuccess: true,
         artifact: action.payload as IArtifact,
-        errorMsg: null
+        errorMessage: null
       };
     }
     case EReducerState.error: {
@@ -43,7 +43,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isError: true,
         isSuccess: false,
         artifact: null,
-        errorMsg: action.payload as string
+        errorMessage: action.payload as string
       };
     }
     case EReducerState.reset: {
@@ -52,7 +52,7 @@ function compileContractReducer(state: TCompileContractState, action: ICompileCo
         isError: false,
         isSuccess: false,
         artifact: null,
-        errorMsg: null
+        errorMessage: null
       };
     }
     default: {
