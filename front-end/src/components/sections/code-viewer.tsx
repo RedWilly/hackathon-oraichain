@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
 
 import { encodeDeployData } from 'viem';
 
+import EReducerState from '@/constants/reducer-state';
 import { copyToClipboard, isClipboardApiSupported } from '@/lib/clipboard';
 import downloadContent from '@/lib/download';
+import { mapViemErrorToMessage } from '@/lib/errors-mapper';
 import { account, publicClient, walletClient } from '@/providers/wagmi';
+import { deployContractInitialState, deployContractReducer } from '@/reducers/deploy-contract';
 
 import CopyButton from '../copy-button';
 import DeploymentDialog from '../deployment-dialog';
 import DownloadButton from '../download-button';
+import ExternalAnchor from '../external-anchor';
 import { Textarea } from '../ui/textarea';
 import SectionContainer from './container';
 
@@ -140,6 +144,11 @@ export default function CodeViewerSection({
   const [constructorArgumentsValue, setConstructorArgumentsValue] =
     useState<TConstructorArgumentValue>({});
 
+  const [deployContractState, dispatchDeployContract] = useReducer(
+    deployContractReducer,
+    deployContractInitialState
+  );
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
     for (const element of mockedABI) {
@@ -189,6 +198,11 @@ export default function CodeViewerSection({
   }, [contractArtifacts]);
 
   async function deployContract() {
+    dispatchDeployContract({
+      state: EReducerState.start,
+      payload: null
+    });
+
     try {
       const data = encodeDeployData({
         abi: mockedABI,
@@ -212,7 +226,19 @@ export default function CodeViewerSection({
 
       const transactionReceipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log('transactionReceipt', transactionReceipt);
+
+      dispatchDeployContract({
+        state: EReducerState.success,
+        payload: transactionReceipt.contractAddress
+      });
     } catch (error: unknown) {
+      const errorMessage = mapViemErrorToMessage(error);
+
+      dispatchDeployContract({
+        state: EReducerState.error,
+        payload: errorMessage
+      });
+
       console.error('Error deploying smart contract', error);
     }
   }
@@ -227,10 +253,34 @@ export default function CodeViewerSection({
           </h4>
         </div>
 
+        {deployContractState.contractAddress && (
+          <div className='flex items-end gap-x-2.5'>
+            <div className='flex flex-col gap-y-1'>
+              <p className='text-sm text-muted-foreground'>Smart Contract address:</p>
+              <ExternalAnchor
+                href={`https://sepolia.etherscan.io/address/${deployContractState.contractAddress}`}
+                className='text-sm hover:underline'
+              >
+                {`${deployContractState.contractAddress?.slice(0, 8)}...${deployContractState.contractAddress?.slice(-8)}`}
+              </ExternalAnchor>
+            </div>
+
+            {isClipboardApiSupported && (
+              <CopyButton
+                iconClassName='w-2.5 h-2.5'
+                buttonClassName='w-5 h-5'
+                onClick={async () => copyToClipboard(deployContractState.contractAddress ?? '')}
+              />
+            )}
+          </div>
+        )}
+
         {contractArtifacts && (
           <DeploymentDialog
             constructorArguments={constructorArguments}
             constructorArgumentsValue={constructorArgumentsValue}
+            deployContractState={deployContractState}
+            dispatchDeployContract={dispatchDeployContract}
             setConstructorArgumentsValue={setConstructorArgumentsValue}
             onDeployClick={deployContract}
           />
