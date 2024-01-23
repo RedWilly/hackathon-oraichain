@@ -35,7 +35,7 @@ export class LlmService {
 
   async callGeneratorLLM(customization: string, contractType: TContractType): Promise<string> {
     if (this.devEnv) {
-      return 'pragma solidity ^0.8.0;\n\ncontract MyContract {\n\n}';
+      return 'pragma solidity ^0.8.0;\n\ncontract MyContract {\n\n // Put a "}" here to solve compilation error\n';
     }
 
     const templateDoc = await SDoc.findOne({ template: contractType });
@@ -83,6 +83,8 @@ export class LlmService {
   }
 
   async callBuildResolverLLM(code: string, compilerError: string): Promise<string> {
-    return await buildResolverAgent().invoke({ code, compilerError });
+    const newCode = await buildResolverAgent().invoke({ code, compilerError });
+
+    return this.trimCode(newCode);
   }
 }
