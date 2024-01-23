@@ -92,7 +92,7 @@ VITE_WALLET_CONNECT_PROJECT_ID=''
 
 ## 📝 Usage
 
-To use ETH-India Repo, start the local development server:
+To use the app, start the local development server:
 
 ```sh
 cd back-end
