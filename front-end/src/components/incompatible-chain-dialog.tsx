@@ -24,7 +24,6 @@ export default function IncompatibleChainDialog() {
     switchChainAsync
   } = useSwitchChain();
 
-  // eslint-disable-next-line unicorn/no-useless-undefined
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
   useEffect(() => {

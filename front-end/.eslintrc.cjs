@@ -55,8 +55,9 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 'off',
     // end
 
-    // unicord
-    'unicorn/no-null': 'off'
+    // unicorn
+    'unicorn/no-null': 'off',
+    'unicorn/no-useless-undefined': 'off'
     // end
   }
 };
