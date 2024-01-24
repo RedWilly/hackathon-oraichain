@@ -2,12 +2,17 @@ import React, { Suspense, useEffect, useReducer, useState } from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
 import type { TContractType } from '@/sdk/src/types';
+import type { EIP1193Provider, PublicClient, WalletClient } from 'viem';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldAlert, ShieldX } from 'lucide-react';
+import { createPublicClient, createWalletClient, custom } from 'viem';
+import { sepolia } from 'viem/chains';
+import { useAccount } from 'wagmi';
 
 import stepBackground from '@/assets/images/step.svg';
 import BorderedContainer from '@/components/bordered-container';
 import ContractCreationSteps from '@/components/contract-creation-steps';
+import ExternalAnchor from '@/components/external-anchor';
 import IncompatibleChainDialog from '@/components/incompatible-chain-dialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,12 +37,18 @@ const PromptSection = React.lazy(() => import('@/components/sections/prompt'));
 const AuditSection = React.lazy(() => import('@/components/sections/audit'));
 const CodeViewerSection = React.lazy(() => import('@/components/sections/code-viewer'));
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function HomePage() {
   // eslint-disable-next-line unicorn/prefer-array-find
   const activeTemplates = chainConfig.templates.filter((template) => template.isActive);
 
   const [activeTemplateName, setActiveTemplateName] = useState(activeTemplates[0].name);
   const [userPrompt, setUserPrompt] = useState('');
+
+  const { isConnected } = useAccount();
+  const [publicClient, setPublicClient] = useState<PublicClient | undefined>(undefined);
+  const [walletClient, setWalletClient] = useState<WalletClient | undefined>(undefined);
+
   const { toast } = useToast();
 
   const [predefinedPromptsState, dispatchPredefinedPrompts] = useReducer(
@@ -59,6 +70,23 @@ export default function HomePage() {
     auditContractReducer,
     auditContractInitialState
   );
+
+  useEffect(() => {
+    if (window.ethereum) {
+      const publicClient = createPublicClient({
+        chain: sepolia,
+        transport: custom(window.ethereum as EIP1193Provider)
+      });
+
+      const walletClient = createWalletClient({
+        chain: sepolia,
+        transport: custom(window.ethereum as EIP1193Provider)
+      });
+
+      setPublicClient(publicClient);
+      setWalletClient(walletClient);
+    }
+  }, []);
 
   useEffect(() => {
     async function getPredefinedPromptsByTemplate() {
@@ -340,6 +368,42 @@ export default function HomePage() {
     }
   }
 
+  if (!publicClient && !walletClient) {
+    return (
+      <div className='flex h-full w-full flex-col items-center justify-center'>
+        <ShieldX className='mb-2.5 h-16 w-16 text-destructive' />
+
+        <h1 className='text-2xl font-bold'>Get a Wallet</h1>
+        <h2 className='mb-5 text-lg text-muted-foreground'>
+          It looks like you don&apos;t have a Wallet installed into your browser
+        </h2>
+
+        <Button asChild>
+          <ExternalAnchor href='https://ethereum.org/en/wallets/find-wallet'>
+            Choose your first Wallet
+          </ExternalAnchor>
+        </Button>
+      </div>
+    );
+  }
+
+  if (!isConnected) {
+    return (
+      <div className='flex h-full w-full flex-col items-center justify-center'>
+        <ShieldAlert className='mb-2.5 h-16 w-16 text-yellow-400' />
+
+        <h1 className='text-2xl font-bold'>Connect your Wallet</h1>
+        <h2 className='mb-5 text-lg text-muted-foreground'>
+          Connect your Wallet to in order to use our application
+        </h2>
+
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-expect-error */}
+        <w3m-button />
+      </div>
+    );
+  }
+
   return (
     <div className='flex w-full max-w-[1140px] flex-col gap-y-5'>
       <IncompatibleChainDialog />
@@ -404,11 +468,13 @@ export default function HomePage() {
         </BorderedContainer>
       ) : null}
 
-      {generateContractState.contractCode ? (
+      {publicClient && walletClient && generateContractState.contractCode ? (
         <BorderedContainer>
           <Suspense fallback={<Skeleton className='h-60 w-[95%] rounded-3xl' />}>
             <CodeViewerSection
               chainsName={chainConfig.name}
+              publicClient={publicClient}
+              walletClient={walletClient}
               smartContractCode={generateContractState.contractCode}
               smartContractFileExtension={chainConfig.contractFileExtension}
               contractArtifacts={isGenerationCompleted ? compileContractState.artifact : null}
