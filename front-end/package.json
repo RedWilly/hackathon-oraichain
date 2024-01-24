@@ -36,7 +36,6 @@
     "wagmi": "^2.3.1"
   },
   "devDependencies": {
-    "@builder.io/partytown": "^0.9.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@playwright/test": "^1.41.1",
     "@types/node": "^20.11.5",

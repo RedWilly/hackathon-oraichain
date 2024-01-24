@@ -1912,6 +1912,18 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@langchain/community@^0.0.20":
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/@langchain/community/-/community-0.0.20.tgz#a64307e959545fa0b4ed6b67d5aba3437cd76879"
+  integrity sha512-maPMjvF50Z+4eMs7HKmY3wfT+k6IjULqLUVPtVdN1zSGobRvnUIbQMKUY2IXVTZmaMXKBAIob+49X8vjO2snDQ==
+  dependencies:
+    "@langchain/core" "~0.1.16"
+    "@langchain/openai" "~0.0.10"
+    flat "^5.0.2"
+    langsmith "~0.0.48"
+    uuid "^9.0.0"
+    zod "^3.22.3"
+
 "@langchain/community@~0.0.17":
   version "0.0.19"
   resolved "https://registry.yarnpkg.com/@langchain/community/-/community-0.0.19.tgz#7feaa1f929428f092aab196f56daea86b1dd7791"
@@ -2014,10 +2026,10 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@pinecone-database/pinecone@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@pinecone-database/pinecone/-/pinecone-2.0.1.tgz#1dce6e06e299dfe2c26490aacffe1103e316b8fc"
-  integrity sha512-a1ejzrqdSQ2yW+9QUi2TVlKwYUbrvGH+QH6POJhITyaOz9ANE+EhXqToC9af93Ctzq9n87+bOUvBvewLeW++Mw==
+"@pinecone-database/pinecone@^1.1.0":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@pinecone-database/pinecone/-/pinecone-1.1.3.tgz#0dce083a26b0a85bcea32f78093543b5f2dff314"
+  integrity sha512-bGldvvoAr4agVZ2ql4RZesXIDjMLjnuqNmKYfMQoVO3UFRYeuO9z+1WJodvanGIPY2iGh1w9yz0jDAkBiT53qw==
   dependencies:
     "@sinclair/typebox" "^0.29.0"
     ajv "^8.12.0"
@@ -3724,6 +3736,13 @@ cron-validator@^1.3.1:
   resolved "https://registry.yarnpkg.com/cron-validator/-/cron-validator-1.3.1.tgz#8f2fe430f92140df77f91178ae31fc1e3a48a20e"
   integrity sha512-C1HsxuPCY/5opR55G5/WNzyEGDWFVG+6GLrA+fW/sCTcP6A6NTjUP2AK7B8n2PyFs90kDG2qzwm8LMheADku6A==
 
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+  dependencies:
+    cross-spawn "^7.0.1"
+
 cross-fetch@^3.1.5:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.8.tgz#0327eba65fd68a7d119f8fb2bf9334a1a7956f82"
@@ -3731,7 +3750,7 @@ cross-fetch@^3.1.5:
   dependencies:
     node-fetch "^2.6.12"
 
-cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -4510,7 +4529,7 @@ gauge@^4.0.3:
     strip-ansi "^6.0.1"
     wide-align "^1.1.5"
 
-genezio@^0.7.2:
+genezio@^0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/genezio/-/genezio-0.7.4.tgz#2f4fc152096c932c22fb03a9ce71871f8fc1a14d"
   integrity sha512-mckGR+JaOwKR6OAanLSgfJt1qPSNlOMLfPtFJ0PCdPASf5a7yhCQxCCrlm8w/5gAVskyGF5oA14cxvc6fSuw2w==
