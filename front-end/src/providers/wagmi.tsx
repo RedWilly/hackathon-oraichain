@@ -1,10 +1,8 @@
 import React from 'react';
 
 import type { PropsWithChildren } from 'react';
-import type { EIP1193Provider } from 'viem';
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi';
-import { createPublicClient, createWalletClient, custom } from 'viem';
 import { WagmiProvider as WagmiContext } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 
@@ -37,16 +35,6 @@ createWeb3Modal({
     '--w3m-color-mix-strength': 1,
     '--w3m-border-radius-master': '0.5rem'
   }
-});
-
-export const walletClient = createWalletClient({
-  chain: sepolia,
-  transport: custom(window.ethereum as EIP1193Provider)
-});
-
-export const publicClient = createPublicClient({
-  chain: sepolia,
-  transport: custom(window.ethereum as EIP1193Provider)
 });
 
 interface IWagmiProvider extends PropsWithChildren {}

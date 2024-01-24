@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useReducer, useState } from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
+import type { PublicClient, WalletClient } from 'viem';
 
 import { encodeDeployData } from 'viem';
 import { sepolia } from 'viem/chains';
@@ -10,7 +11,6 @@ import EReducerState from '@/constants/reducer-state';
 import { copyToClipboard, isClipboardApiSupported } from '@/lib/clipboard';
 import downloadContent from '@/lib/download';
 import { mapViemErrorToMessage } from '@/lib/errors-mapper';
-import { publicClient, walletClient } from '@/providers/wagmi';
 import { deployContractInitialState, deployContractReducer } from '@/reducers/deploy-contract';
 
 import CopyButton from '../copy-button';
@@ -31,6 +31,8 @@ export type TConstructorArgumentValue = Record<string, string>;
 
 interface ISmartContractCodeSection {
   chainsName: string;
+  publicClient: PublicClient;
+  walletClient: WalletClient;
   smartContractCode: string;
   smartContractFileExtension: string;
   contractArtifacts: IArtifact | null;
@@ -38,6 +40,8 @@ interface ISmartContractCodeSection {
 
 export default function CodeViewerSection({
   chainsName,
+  publicClient,
+  walletClient,
   smartContractCode,
   smartContractFileExtension,
   contractArtifacts
@@ -133,14 +137,17 @@ export default function CodeViewerSection({
         account: address,
         bytecode: contractArtifacts.bytecode,
         args: Object.values(constructorArgumentsValue),
-        gas: estimateGas
+        gas: estimateGas,
+        chain: sepolia
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const transactionReceipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log('transactionReceipt', transactionReceipt);
 
       dispatchDeployContract({
         state: EReducerState.success,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         payload: transactionReceipt.contractAddress
       });
     } catch (error: unknown) {

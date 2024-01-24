@@ -2,8 +2,11 @@ import React, { Suspense, useEffect, useReducer, useState } from 'react';
 
 import type IArtifact from '@/interfaces/artifact';
 import type { TContractType } from '@/sdk/src/types';
+import type { EIP1193Provider, PublicClient, WalletClient } from 'viem';
 
 import { Loader2 } from 'lucide-react';
+import { createPublicClient, createWalletClient, custom } from 'viem';
+import { sepolia } from 'viem/chains';
 
 import stepBackground from '@/assets/images/step.svg';
 import BorderedContainer from '@/components/bordered-container';
@@ -38,6 +41,10 @@ export default function HomePage() {
 
   const [activeTemplateName, setActiveTemplateName] = useState(activeTemplates[0].name);
   const [userPrompt, setUserPrompt] = useState('');
+
+  const [publicClient, setPublicClient] = useState<PublicClient | undefined>(undefined);
+  const [walletClient, setWalletClient] = useState<WalletClient | undefined>(undefined);
+
   const { toast } = useToast();
 
   const [predefinedPromptsState, dispatchPredefinedPrompts] = useReducer(
@@ -59,6 +66,23 @@ export default function HomePage() {
     auditContractReducer,
     auditContractInitialState
   );
+
+  useEffect(() => {
+    if (window.ethereum) {
+      const publicClient = createPublicClient({
+        chain: sepolia,
+        transport: custom(window.ethereum as EIP1193Provider)
+      });
+
+      const walletClient = createWalletClient({
+        chain: sepolia,
+        transport: custom(window.ethereum as EIP1193Provider)
+      });
+
+      setPublicClient(publicClient);
+      setWalletClient(walletClient);
+    }
+  }, []);
 
   useEffect(() => {
     async function getPredefinedPromptsByTemplate() {
@@ -404,11 +428,13 @@ export default function HomePage() {
         </BorderedContainer>
       ) : null}
 
-      {generateContractState.contractCode ? (
+      {publicClient && walletClient && generateContractState.contractCode ? (
         <BorderedContainer>
           <Suspense fallback={<Skeleton className='h-60 w-[95%] rounded-3xl' />}>
             <CodeViewerSection
               chainsName={chainConfig.name}
+              publicClient={publicClient}
+              walletClient={walletClient}
               smartContractCode={generateContractState.contractCode}
               smartContractFileExtension={chainConfig.contractFileExtension}
               contractArtifacts={isGenerationCompleted ? compileContractState.artifact : null}
