@@ -3,7 +3,8 @@ import React, { Suspense, useEffect, useReducer, useState } from 'react';
 import type IArtifact from '@/interfaces/artifact';
 
 import { encodeDeployData } from 'viem';
-import { useAccount } from 'wagmi';
+import { sepolia } from 'viem/chains';
+import { useAccount, useSwitchChain } from 'wagmi';
 
 import EReducerState from '@/constants/reducer-state';
 import { copyToClipboard, isClipboardApiSupported } from '@/lib/clipboard';
@@ -20,108 +21,6 @@ import { Textarea } from '../ui/textarea';
 import SectionContainer from './container';
 
 const DeploymentDialog = React.lazy(() => import('../deployment-dialog'));
-
-const mockedABI = [
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'maxSupply_',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'buyFee_',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'sellFee_',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'liquidityFee_',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'antiWhaleLimit_',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor'
-  },
-  {
-    inputs: [],
-    name: 'antiWhaleLimit',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'buyFeePercentage',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'liquidityFeePercentage',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'liquidityWallet',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'sellFeePercentage',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  }
-];
-
-const mockedBytecode =
-  '0x608060405234801561000f575f80fd5b5060405161030338038061030383398181016040528101906100319190610094565b845f8190555083600181905550826002819055508160038190555080600481905550505050505061010b565b5f80fd5b5f819050919050565b61007381610061565b811461007d575f80fd5b50565b5f8151905061008e8161006a565b92915050565b5f805f805f60a086880312156100ad576100ac61005d565b5b5f6100ba88828901610080565b95505060206100cb88828901610080565b94505060406100dc88828901610080565b93505060606100ed88828901610080565b92505060806100fe88828901610080565b9150509295509295909350565b6101eb806101185f395ff3fe608060405234801561000f575f80fd5b5060043610610055575f3560e01c80631234f86814610059578063601d495814610077578063d44545e714610095578063d4698016146100b3578063e208a939146100d1575b5f80fd5b6100616100ef565b60405161006e9190610144565b60405180910390f35b61007f6100f5565b60405161008c9190610144565b60405180910390f35b61009d6100fb565b6040516100aa9190610144565b60405180910390f35b6100bb610101565b6040516100c8919061019c565b60405180910390f35b6100d9610126565b6040516100e69190610144565b60405180910390f35b60045481565b60035481565b60015481565b60055f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b5f819050919050565b61013e8161012c565b82525050565b5f6020820190506101575f830184610135565b92915050565b5f73ffffffffffffffffffffffffffffffffffffffff82169050919050565b5f6101868261015d565b9050919050565b6101968161017c565b82525050565b5f6020820190506101af5f83018461018d565b9291505056fea2646970667358221220018b4e4ac269db3d55b5c938e0db0610704e1723c3b43ad1aaa413ad4992eff164736f6c63430008140033';
 
 export type TConstructorArgument = {
   name: string;
@@ -143,7 +42,8 @@ export default function CodeViewerSection({
   smartContractFileExtension,
   contractArtifacts
 }: ISmartContractCodeSection) {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
 
   const [constructorArguments, setConstructorArguments] = useState<TConstructorArgument[]>([]);
   const [constructorArgumentsValue, setConstructorArgumentsValue] =
@@ -156,7 +56,11 @@ export default function CodeViewerSection({
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
-    for (const element of mockedABI) {
+    if (!contractArtifacts) {
+      return;
+    }
+
+    for (const element of contractArtifacts.abi) {
       if (
         element !== null &&
         element !== undefined &&
@@ -166,12 +70,7 @@ export default function CodeViewerSection({
       ) {
         const constructor = element;
 
-        if (
-          constructor !== null &&
-          constructor !== undefined &&
-          'inputs' in constructor &&
-          Array.isArray(constructor.inputs)
-        ) {
+        if (constructor !== null && constructor !== undefined && 'inputs' in constructor) {
           const _constructorArguments: TConstructorArgument[] = [];
           const _constructorArgumentsValue: TConstructorArgumentValue = {};
 
@@ -203,8 +102,11 @@ export default function CodeViewerSection({
   }, [contractArtifacts]);
 
   async function deployContract() {
-    if (!address) {
+    if (!address || !contractArtifacts) {
       return;
+    }
+    if (chainId !== sepolia.id) {
+      await switchChainAsync({ chainId: sepolia.id });
     }
 
     dispatchDeployContract({
@@ -214,8 +116,8 @@ export default function CodeViewerSection({
 
     try {
       const data = encodeDeployData({
-        abi: mockedABI,
-        bytecode: mockedBytecode,
+        abi: contractArtifacts.abi,
+        bytecode: contractArtifacts.bytecode,
         args: Object.values(constructorArgumentsValue)
       });
 
@@ -226,9 +128,9 @@ export default function CodeViewerSection({
       });
 
       const hash = await walletClient.deployContract({
-        abi: mockedABI,
+        abi: contractArtifacts.abi,
         account: address,
-        bytecode: mockedBytecode,
+        bytecode: contractArtifacts.bytecode,
         args: Object.values(constructorArgumentsValue),
         gas: estimateGas
       });

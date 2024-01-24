@@ -87,7 +87,9 @@ export default function DeploymentDialog({
         {!deployContractState.isSuccess && (
           <DialogHeader>
             <DialogTitle>Deploy Smart Contract</DialogTitle>
-            <DialogDescription>Provide the arguments for the constructor.</DialogDescription>
+            {constructorArguments.length > 0 && (
+              <DialogDescription>Provide the arguments for the constructor.</DialogDescription>
+            )}
           </DialogHeader>
         )}
 
