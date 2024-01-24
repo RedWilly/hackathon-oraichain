@@ -12,6 +12,9 @@ export function mapViemErrorToMessage(error: unknown) {
       case 'SyntaxError': {
         return 'You misspelled one or more constructor arguments. Please check and try again.';
       }
+      case 'UserRejectedRequestError': {
+        return 'You rejected the request.';
+      }
       case 'TransactionExecutionError': {
         return 'You cancelled the transaction.';
       }

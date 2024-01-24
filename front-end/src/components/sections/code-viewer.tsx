@@ -42,7 +42,7 @@ export default function CodeViewerSection({
   smartContractFileExtension,
   contractArtifacts
 }: ISmartContractCodeSection) {
-  const { address, chainId } = useAccount();
+  const { chainId, address } = useAccount();
   const { switchChainAsync } = useSwitchChain();
 
   const [constructorArguments, setConstructorArguments] = useState<TConstructorArgument[]>([]);
@@ -105,6 +105,7 @@ export default function CodeViewerSection({
     if (!address || !contractArtifacts) {
       return;
     }
+
     if (chainId !== sepolia.id) {
       await switchChainAsync({ chainId: sepolia.id });
     }

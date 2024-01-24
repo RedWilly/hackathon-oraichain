@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import stepBackground from '@/assets/images/step.svg';
 import BorderedContainer from '@/components/bordered-container';
 import ContractCreationSteps from '@/components/contract-creation-steps';
+import IncompatibleChainDialog from '@/components/incompatible-chain-dialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/toast/use-toast';
@@ -341,6 +342,8 @@ export default function HomePage() {
 
   return (
     <div className='flex w-full max-w-[1140px] flex-col gap-y-5'>
+      <IncompatibleChainDialog />
+
       <BorderedContainer
         className='bg-cover md:mt-16 md:bg-contain'
         style={{
