@@ -23,7 +23,10 @@ export default function SuccessfulTransaction({ content, onCloseClick }: ISucces
         <h3>{content}</h3>
       </div>
 
-      <Button onClick={onCloseClick}>Ok, close</Button>
+      {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+      <Button autoFocus onClick={onCloseClick}>
+        Ok, close
+      </Button>
     </div>
   );
 }
