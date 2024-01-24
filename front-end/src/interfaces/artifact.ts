@@ -1,5 +1,8 @@
 /* eslint-disable semi */
 
+import type { Abi, Hex } from 'viem';
+
 export default interface IArtifact {
-  // TODO
+  abi: Abi;
+  bytecode: Hex;
 }

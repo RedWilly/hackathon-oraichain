@@ -39,7 +39,7 @@ export class LlmService {
     }
 
     const templateDoc = await SDoc.findOne({ template: contractType });
-    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY || '' });
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY || '', environment: 'gcp-starter' });
     const generator = await generatorAgent(pinecone);
     const responseCode = await generator.invoke({
       example: templateDoc?.example || '',
