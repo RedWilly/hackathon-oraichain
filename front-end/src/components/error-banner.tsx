@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { HTMLAttributes, PropsWithChildren } from 'react';
 
-import { AlertTriangle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -12,13 +12,13 @@ export default function ErrorBanner({ className, children, ...properties }: IErr
   return (
     <div
       className={cn(
-        'flex items-center gap-x-2.5 rounded-md bg-destructive px-2.5 py-1.5 text-sm text-destructive-foreground',
+        'flex items-center gap-x-2.5 rounded-md bg-destructive px-2.5 py-1.5',
         className
       )}
       {...properties}
     >
-      <AlertTriangle className='h-5 w-5 shrink-0' />
-      <p>{children}</p>
+      <XCircle className='h-5 w-5 shrink-0 text-destructive-foreground' />
+      <p className='text-sm text-destructive-foreground'>{children}</p>
     </div>
   );
 }
